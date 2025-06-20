@@ -9,7 +9,7 @@
     table { border-collapse: collapse; margin-bottom: 20px; width: auto; }
     th, td { border: 1px solid #007acc; padding: 8px; text-align: center; white-space: nowrap; }
     th { background-color: #e6f2ff; }
-    input[type="number"], input[type="text"] {
+    input[type="number"], input[type="text"], input[type="date"] {
       padding: 6px; min-width: 120px; border: 1px solid #007acc; border-radius: 4px;
     }
     button {
@@ -31,6 +31,8 @@
 </head>
 <body>
   <h2>GMV Profit/Loss Calculator</h2>
+
+  <label>Range Date: <input type="text" placeholder="Contoh: 1 Jun - 20 Jun 2025" /></label><br /><br />
 
   <table id="skuTable">
     <thead>
