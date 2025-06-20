@@ -5,14 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GMV Profit/Loss Calculator</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
+    body { font-family: Arial, sans-serif; padding: 20px; background-color: #f9fbff; color: #003366; }
     table { border-collapse: collapse; margin-bottom: 20px; width: auto; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; white-space: nowrap; }
-    th { background-color: #f0f0f0; }
-    input[type="number"], input[type="text"] { padding: 4px; min-width: 100px; }
-    button { padding: 6px 12px; margin: 5px; }
-    #results { font-weight: bold; }
-    .note { margin-top: 30px; font-size: 0.9em; color: #444; border-top: 1px solid #ccc; padding-top: 10px; }
+    th, td { border: 1px solid #007acc; padding: 8px; text-align: center; white-space: nowrap; }
+    th { background-color: #e6f2ff; }
+    input[type="number"], input[type="text"] {
+      padding: 6px; min-width: 120px; border: 1px solid #007acc; border-radius: 4px;
+    }
+    button {
+      padding: 6px 12px; margin: 5px; background-color: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer;
+    }
+    button:hover { background-color: #005c99; }
+    #results { font-weight: bold; margin-top: 20px; }
+    .note {
+      margin-top: 30px; font-size: 0.9em; color: #333;
+    }
+    .input-section label {
+      display: inline-block;
+      width: 250px;
+      margin: 5px 0;
+    }
+    .positive { color: green; }
+    .negative { color: red; }
   </style>
 </head>
 <body>
@@ -33,11 +47,13 @@
   <button onclick="addRow()">Add SKU</button>
 
   <h3>Inputs</h3>
-  <label>Total GMV Revenue (RM): <input type="number" id="gmvRevenue" /></label><br />
-  <label>Total Cancelled/Refund (RM): <input type="number" id="refund" /></label><br />
-  <label>Average Shipping Cost (RM): <input type="number" id="avgShipping" /></label><br />
-  <label>Affiliate Fee (RM): <input type="number" id="affiliateFee" /></label><br />
-  <label>Ads Cost (RM): <input type="number" id="adsCost" /></label><br />
+  <div class="input-section">
+    <label>Total GMV Revenue (RM): <input type="number" id="gmvRevenue" /></label><br />
+    <label>Total Cancelled/Refund (RM): <input type="number" id="refund" /></label><br />
+    <label>Average Shipping Cost (RM): <input type="number" id="avgShipping" /></label><br />
+    <label>Affiliate Fee (RM): <input type="number" id="affiliateFee" /></label><br />
+    <label>Ads Cost (RM): <input type="number" id="adsCost" /></label>
+  </div>
 
   <h3>Results</h3>
   <div id="results"></div>
@@ -91,6 +107,7 @@
 
       const profit = netSales - totalCOGS - transactionFee - commissionFee - serviceFee - affiliateFee - adsCost;
       const margin = netSales > 0 ? (profit / netSales) * 100 : 0;
+      const profitClass = profit >= 0 ? 'positive' : 'negative';
 
       document.getElementById('results').innerHTML = `
         Total COGS: RM ${totalCOGS.toFixed(2)}<br />
@@ -101,7 +118,7 @@
         Affiliate Fee: RM ${affiliateFee.toFixed(2)}<br />
         Ads Cost: RM ${adsCost.toFixed(2)}<br />
         <br />
-        <strong>Profit/Loss: RM ${profit.toFixed(2)}</strong><br />
+        <strong class="${profitClass}">Profit/Loss: RM ${profit.toFixed(2)}</strong><br />
         <strong>Profit Margin: ${margin.toFixed(2)}%</strong>
       `;
     }
