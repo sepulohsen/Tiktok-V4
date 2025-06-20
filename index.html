@@ -1,0 +1,118 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GMV Profit/Loss Calculator</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background-color: #f0f0f0; }
+    input[type="number"], input[type="text"] { width: 100%; padding: 4px; }
+    button { padding: 6px 12px; margin: 5px; }
+    #results { font-weight: bold; }
+    .note { margin-top: 30px; font-size: 0.9em; color: #444; border-top: 1px solid #ccc; padding-top: 10px; }
+  </style>
+</head>
+<body>
+  <h2>GMV Profit/Loss Calculator</h2>
+
+  <table id="skuTable">
+    <thead>
+      <tr>
+        <th>SKU Name</th>
+        <th>COGS (RM)</th>
+        <th>Unit Sold</th>
+        <th>Remove</th>
+      </tr>
+    </thead>
+    <tbody id="skuBody"></tbody>
+  </table>
+
+  <button onclick="addRow()">Add SKU</button>
+
+  <h3>Inputs</h3>
+  <label>Total GMV Revenue (RM): <input type="number" id="gmvRevenue" /></label><br />
+  <label>Total Cancelled/Refund (RM): <input type="number" id="refund" /></label><br />
+  <label>Average Shipping Cost (RM): <input type="number" id="avgShipping" /></label><br />
+  <label>Affiliate Fee (RM): <input type="number" id="affiliateFee" /></label><br />
+  <label>Ads Cost (RM): <input type="number" id="adsCost" /></label><br />
+
+  <h3>Results</h3>
+  <div id="results"></div>
+
+  <button onclick="calculate()">Calculate</button>
+  <button onclick="copyResults()">Salin Keputusan</button>
+  <button onclick="window.print()">Cetak / Simpan ke PDF</button>
+
+  <div class="note">
+    <strong>Nota:</strong> Kalkulator ini membolehkan anda menyemak secara bulanan Untung Rugi Sesuatu Produk.<br />
+    TikTok Fee semasa untuk ialah 15.66% sesetakat 20 June 2025<br /><br />
+    🛠️ Dibangunkan oleh <strong>Zaim</strong> | NutraCat | KPSPro TikTok Profit
+  </div>
+
+  <script>
+    const transactionRate = 0.0378;
+    const commissionRate = 0.0756;
+    const serviceRate = 0.0432;
+
+    function addRow() {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><input type="text" /></td>
+        <td><input type="number" /></td>
+        <td><input type="number" /></td>
+        <td><button onclick="this.parentElement.parentElement.remove()">X</button></td>
+      `;
+      document.getElementById('skuBody').appendChild(row);
+    }
+
+    function calculate() {
+      const rows = document.querySelectorAll('#skuBody tr');
+      let totalCOGS = 0, totalUnits = 0;
+      rows.forEach(row => {
+        const cogs = parseFloat(row.children[1].children[0].value) || 0;
+        const sold = parseFloat(row.children[2].children[0].value) || 0;
+        totalCOGS += cogs * sold;
+        totalUnits += sold;
+      });
+
+      const gmv = parseFloat(document.getElementById('gmvRevenue').value) || 0;
+      const refund = parseFloat(document.getElementById('refund').value) || 0;
+      const avgShipping = parseFloat(document.getElementById('avgShipping').value) || 0;
+      const affiliateFee = parseFloat(document.getElementById('affiliateFee').value) || 0;
+      const adsCost = parseFloat(document.getElementById('adsCost').value) || 0;
+
+      const netSales = gmv - (totalUnits * avgShipping) - refund;
+      const transactionFee = transactionRate * gmv;
+      const commissionFee = commissionRate * netSales;
+      const serviceFee = serviceRate * netSales;
+
+      const profit = netSales - totalCOGS - transactionFee - commissionFee - serviceFee - affiliateFee - adsCost;
+      const margin = netSales > 0 ? (profit / netSales) * 100 : 0;
+
+      document.getElementById('results').innerHTML = `
+        Total COGS: RM ${totalCOGS.toFixed(2)}<br />
+        Net Sales: RM ${netSales.toFixed(2)}<br />
+        Transaction Fee: RM ${transactionFee.toFixed(2)}<br />
+        Commission Fee: RM ${commissionFee.toFixed(2)}<br />
+        Service Fee: RM ${serviceFee.toFixed(2)}<br />
+        Affiliate Fee: RM ${affiliateFee.toFixed(2)}<br />
+        Ads Cost: RM ${adsCost.toFixed(2)}<br />
+        <br />
+        <strong>Profit/Loss: RM ${profit.toFixed(2)}</strong><br />
+        <strong>Profit Margin: ${margin.toFixed(2)}%</strong>
+      `;
+    }
+
+    function copyResults() {
+      const text = document.getElementById('results').innerText;
+      navigator.clipboard.writeText(text).then(() => alert('Keputusan telah disalin!'));
+    }
+
+    window.onload = () => addRow();
+  </script>
+</body>
+</html>
